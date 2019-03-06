@@ -2,11 +2,10 @@ const express = require('express')
 const app = express()
 
 const server = require('http').Server(app)
-    .listen(3000)
+    .listen(3000,()=>{console.log('open server!')})
 const io = require('socket.io')(server)
 
 io.on('connection', socket => {
-
     socket.on('setRoom', room => {
         socket.join(room)
     })
@@ -28,7 +27,11 @@ io.on('connection', socket => {
 
     /*回傳給和發送者相同房間的 client*/
     socket.on('getMessageRoom', message => {
-        console.log(socket)
-        io.sockets.in('game').emit('message', 'cool game')
+
+        room = Object.keys(socket.rooms).find(room =>{
+            return room !== socket.id
+        })
+        console.log(room)
+        io.sockets.in(room).emit('getMessageRoom', message)
     })
 })
