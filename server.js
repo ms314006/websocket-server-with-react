@@ -6,8 +6,12 @@ const server = require('http').Server(app)
 const io = require('socket.io')(server)
 
 io.on('connection', socket => {
-    socket.on('setRoom', room => {
+    socket.on('addRoom', room => {
         socket.join(room)
+        //發送給在同一個 room 中除了自己外的 Client
+        //socket.to(room).emit('addRoom', '已有新人加入聊天室！')
+        //發送給在 room 中所有的 Client
+        io.sockets.in(room).emit('addRoom', '已有新人加入聊天室！')
     })
 
     /*只回傳給發送訊息的 client*/
